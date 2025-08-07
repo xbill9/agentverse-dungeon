@@ -1,3 +1,4 @@
 fastapi
 uvicorn[standard]
 python-multipart
+google-adk==1.9.0

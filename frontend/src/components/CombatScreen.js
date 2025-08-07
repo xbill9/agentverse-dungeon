@@ -3,6 +3,7 @@ import Boss from './Boss';
 import Player from './Player';
 import QuizModal from './QuizModal';
 import StatusDisplay from './StatusDisplay';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const GameOverScreen = ({ gameState, onReset }) => {
     const { player_won, game_type, boss } = gameState;
@@ -25,6 +26,9 @@ const GameOverScreen = ({ gameState, onReset }) => {
         </div>
     );
 };
+const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png', '/assets/images/bf-bg-3.png', '/assets/images/bf-bg-4.png'];
+const ranNum = Math.random() * backgrounds.length
+const randomBg = backgrounds[Math.floor(ranNum)];
 
 const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [displayGameState, setDisplayGameState] = useState(gameState);
@@ -33,15 +37,36 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [playerDialog, setPlayerDialog] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
 
+    const { setBackground } = useBackground();
     const prevGameStateRef = useRef();
-    useEffect(() => {
-        prevGameStateRef.current = gameState;
-    });
-    const prevGameState = prevGameStateRef.current;
+    
 
-    useEffect(() => {
+        useEffect(() => {
+        console.log('CombatScreen: useEffect triggered with gameState:', gameState);
+
+        prevGameStateRef.current = gameState;
+        const prevGameState = prevGameStateRef.current;
+
+        if (!gameState) {
+            return; // Exit early if gameState is null or undefined
+        }
+        
+        // --- Background Logic ---
+        if (!gameState.game_over) {
+            if (gameState.game_type === 'mini') {
+                setBackground(randomBg);
+            } else if (gameState.game_type === 'ultimate') {
+                setBackground('/assets/images/bf-ultimate.png');
+            }
+        }
+
         setDisplayGameState(gameState);
         setStatusMessage(gameState.status_message);
+        console.log('CombatScreen: gameState updated', gameState);
+        console.log('CombatScreen: game_over', gameState.game_over);
+        if (gameState.boss) {
+            console.log('CombatScreen: Boss HP', gameState.boss.current_hp);
+        }
 
         if (gameState.game_over) {
             setShowQuiz(false);
@@ -69,33 +94,36 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         }
 
         // --- Turn Advancement Logic ---
-        if (gameState.current_turn === 'boss' && prevGameState?.current_turn !== 'boss') {
-            const nextRoundTimer = setTimeout(() => {
+        if (gameState.current_turn === 'boss' && !gameState.game_over) {
+            const bossTurnPolling = setInterval(() => {
                 pollGameState(gameState.game_id);
-            }, 2000);
-            return () => clearTimeout(nextRoundTimer);
+            }, 2000); // Poll every 2 seconds during boss turn
+            return () => clearInterval(bossTurnPolling);
+        } else if (prevGameState?.current_turn === 'boss' && gameState.current_turn !== 'boss') {
+            // Clear boss dialog when boss turn ends
+            setBossDialog(null);
         }
 
-        if (gameState.current_turn !== 'boss' && prevGameState?.current_turn === 'boss') {
-            const playerTurnTimer = setTimeout(() => {
-                setBossDialog(null);
-            }, 2000);
-            return () => clearTimeout(playerTurnTimer);
-        }
-
-    }, [gameState, pollGameState]);
-
-
-    if (displayGameState.game_over) {
-        return <GameOverScreen gameState={displayGameState} onReset={onReset} />;
-    }
+    }, [gameState, pollGameState, setBackground, showQuiz]);
 
     const handleAnswer = (answerIndex) => {
+        if (displayGameState.game_over) {
+            return <GameOverScreen gameState={displayGameState} onReset={onReset} />;
+        }
         console.log('Quiz answer clicked:', answerIndex);
         setShowQuiz(false);
         setPlayerDialog(null);
         onAction(gameState.game_id, answerIndex);
+        pollGameState(gameState.game_id); // Poll for updated game state immediately after player action
     };
+
+    if (!displayGameState) {
+        return null; // Or a loading spinner
+    }
+
+    if (displayGameState.game_over) {
+        return <GameOverScreen gameState={displayGameState} onReset={onReset} />;
+    }
 
     return (
         <div className="combat-screen">

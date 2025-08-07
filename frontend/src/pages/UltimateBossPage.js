@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const UltimateBossPage = ({ onGameStart }) => {
     const [endpoints, setEndpoints] = useState({
@@ -7,6 +8,11 @@ const UltimateBossPage = ({ onGameStart }) => {
         Guardian: 'http://localhost:8080/player-agent',
         Summoner: 'http://localhost:8080/player-agent',
     });
+    const { setBackground } = useBackground();
+
+    useEffect(() => {
+        setBackground('/assets/images/bf-ultimate.png');
+    }, [setBackground]);
 
     const handleStart = () => {
         onGameStart('ultimate', { a2a_endpoints: endpoints });

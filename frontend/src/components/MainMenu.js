@@ -1,12 +1,17 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const MainMenu = ({ setPage }) => {
+const MainMenu = () => {
   return (
     <div className="main-menu">
       <h1>Choose Your Battle</h1>
       <div className="menu-buttons">
-        <button className="btn" onClick={() => setPage('mini-boss')}>Enter Mini Boss Dungeon</button>
-        <button className="btn btn-ultimate" onClick={() => setPage('ultimate-boss')}>Enter The Void's Maw</button>
+        <Link to="/mini-boss">
+          <button className="btn">Enter Mini Boss Dungeon</button>
+        </Link>
+        <Link to="/ultimate-boss">
+          <button className="btn btn-ultimate">Enter The Void's Maw</button>
+        </Link>
       </div>
     </div>
   );

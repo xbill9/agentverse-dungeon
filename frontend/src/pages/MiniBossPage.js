@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const MiniBossPage = ({ onGameStart }) => {
     const [playerClass, setPlayerClass] = useState('Shadowblade');
     const [boss, setBoss] = useState('Procrastination');
     const [a2aEndpoint, setA2aEndpoint] = useState('http://localhost:8080/player-agent');
+    const { setBackground } = useBackground();
+
+    useEffect(() => {
+        setBackground('/assets/images/enterinfo.png');
+    }, [setBackground]);
 
     const handleStart = () => {
         onGameStart('mini', { player_class: playerClass, boss_name: boss, a2a_endpoint: a2aEndpoint });

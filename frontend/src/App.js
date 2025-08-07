@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useBackground } from './contexts/BackgroundContext';
 import axios from 'axios';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import MainMenu from './components/MainMenu';
 import CombatScreen from './components/CombatScreen';
 import PreCombatScreen from './components/PreCombatScreen';
 import MiniBossPage from './pages/MiniBossPage';
 import UltimateBossPage from './pages/UltimateBossPage';
+import HomePage from './pages/HomePage';
 import './styles.css';
 
 const API_URL = 'http://localhost:8000';
@@ -13,7 +16,9 @@ function App() {
     const [preGameState, setPreGameState] = useState(null);
     const [gameState, setGameState] = useState(null);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState('menu');
+    const navigate = useNavigate();
+
+    const { setBackground } = useBackground();
 
     const handleGameStart = async (gameType, params) => {
         try {
@@ -21,7 +26,7 @@ function App() {
             const response = await axios.post(`${API_URL}${endpoint}`, params);
             setPreGameState(response.data);
             setError(null);
-            setPage('pre-combat');
+            navigate('/pre-combat');
         } catch (err) {
             setError(err.response?.data?.detail ? JSON.stringify(err.response.data.detail) : 'Failed to start game.');
         }
@@ -37,15 +42,24 @@ function App() {
     };
 
     const handleFightStart = () => {
+        if (preGameState) {
+            if (preGameState.game_type === 'mini-boss') {
+                const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png', '/assets/images/bf-bg-3.png', '/assets/images/bf-bg-4.png'];
+                const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                setBackground(randomBg);
+            } else if (preGameState.game_type === 'ultimate') {
+                setBackground('/assets/images/bf-ultimate.png');
+            }
+        }
         setGameState(preGameState);
         setPreGameState(null);
-        setPage('combat');
+        navigate('/combat');
     };
 
     const resetToMenu = () => {
         setGameState(null);
         setError(null);
-        setPage('menu');
+        navigate('/');
     };
 
     const pollGameState = async (gameId) => {
@@ -57,25 +71,16 @@ function App() {
         }
     };
 
-    const renderPage = () => {
-        switch (page) {
-            case 'mini-boss':
-                return <MiniBossPage onGameStart={handleGameStart} />;
-            case 'ultimate-boss':
-                return <UltimateBossPage onGameStart={handleGameStart} />;
-            case 'pre-combat':
-                return <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} />;
-            case 'combat':
-                return <CombatScreen gameState={gameState} onAction={handleAction} onReset={resetToMenu} pollGameState={pollGameState} />;
-            default:
-                return <MainMenu setPage={setPage} />;
-        }
-    };
-
     return (
         <div className="App">
             {error && <div className="error-message">{error}</div>}
-            {renderPage()}
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/mini-boss" element={<MiniBossPage onGameStart={handleGameStart} />} />
+                <Route path="/ultimate-boss" element={<UltimateBossPage onGameStart={handleGameStart} />} />
+                <Route path="/pre-combat" element={preGameState ? <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} /> : <HomePage />} />
+                <Route path="/combat" element={<CombatScreen gameState={gameState} onAction={handleAction} onReset={resetToMenu} pollGameState={pollGameState} />} />
+            </Routes>
         </div>
     );
 }
