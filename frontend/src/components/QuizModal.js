@@ -8,7 +8,7 @@ const QuizModal = ({ quiz, onAnswer }) => {
         if (quiz) {
             console.log('QuizModal: Opening with new quiz.');
         } else {
-            console.log('QuizModal: Closing.');
+            
         }
     }, [quiz]);
 

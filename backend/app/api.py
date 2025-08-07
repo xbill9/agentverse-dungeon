@@ -18,7 +18,6 @@ def advance_turn(game: GameState):
     game.turn_index = (game.turn_index + 1) % len(game.turn_order)
     game.current_turn = game.turn_order[game.turn_index]
     game.active_quiz = None
-    game.last_boss_attack = None
 
 def check_game_over(game: GameState) -> bool:
     """Checks if the game has ended and sets the state."""
@@ -195,6 +194,12 @@ def process_turn(game: GameState) -> GameState:
         active_players = [p for p in game.players if p.hp > 0]
         for player in active_players:
             damage = random.randint(75, 200)
+            if player.player_class == "Guardian":
+                damage = random.randint(100, 250)  # Guardian takes more damage
+            elif player.player_class == "Scholar":
+                damage = random.randint(50, 100)   # Scholar takes less damage
+            else:
+                damage = random.randint(75, 200)   # Other classes take normal damage
             player.last_damage_taken = damage
             player.hp = max(0, player.hp - damage)
     else:

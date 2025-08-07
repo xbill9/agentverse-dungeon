@@ -129,5 +129,5 @@ def mock_damage_quiz_agent(player_response: str) -> Quiz:
     return Quiz(
         **selected_quiz,
         damage_point=random.randint(150, 300),
-        msg="The player prepares a powerful, well-reasoned counter-attack!"
+        msg=f"The player prepares a powerful, well-reasoned counter-attack! {player_response}"
     )

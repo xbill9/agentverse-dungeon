@@ -10,6 +10,8 @@ const DialogBubble = ({ message, duration = 4000 }) => {
                 setVisible(false);
             }, duration);
             return () => clearTimeout(timer);
+        } else {
+            setVisible(false);
         }
     }, [message, duration]);
 

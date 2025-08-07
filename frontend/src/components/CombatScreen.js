@@ -42,7 +42,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     
 
         useEffect(() => {
-        console.log('CombatScreen: useEffect triggered with gameState:', gameState);
+        
 
         prevGameStateRef.current = gameState;
         const prevGameState = prevGameStateRef.current;
@@ -62,8 +62,8 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
 
         setDisplayGameState(gameState);
         setStatusMessage(gameState.status_message);
-        console.log('CombatScreen: gameState updated', gameState);
-        console.log('CombatScreen: game_over', gameState.game_over);
+        
+        
         if (gameState.boss) {
             console.log('CombatScreen: Boss HP', gameState.boss.current_hp);
         }
@@ -90,7 +90,10 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         }
 
         if (gameState.last_boss_attack) {
+            console.log('CombatScreen: Setting bossDialog to', gameState.last_boss_attack);
             setBossDialog(gameState.last_boss_attack);
+        } else {
+            console.log('CombatScreen: gameState.last_boss_attack is null or empty');
         }
 
         // --- Turn Advancement Logic ---
@@ -99,10 +102,8 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                 pollGameState(gameState.game_id);
             }, 2000); // Poll every 2 seconds during boss turn
             return () => clearInterval(bossTurnPolling);
-        } else if (prevGameState?.current_turn === 'boss' && gameState.current_turn !== 'boss') {
-            // Clear boss dialog when boss turn ends
-            setBossDialog(null);
         }
+        
 
     }, [gameState, pollGameState, setBackground, showQuiz]);
 
