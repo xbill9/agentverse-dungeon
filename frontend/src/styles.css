@@ -43,6 +43,12 @@ body {
     color: #e0e0e0;
 }
 
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .menu-section {
     width: 100%;
     padding: 1.5rem;

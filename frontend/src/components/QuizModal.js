@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 
 const QuizModal = ({ quiz, onAnswer }) => {
+    const nodeRef = useRef(null);
+
     useEffect(() => {
         if (quiz) {
             console.log('QuizModal: Opening with new quiz.');
@@ -13,8 +15,8 @@ const QuizModal = ({ quiz, onAnswer }) => {
     if (!quiz) return null;
 
     return (
-        <Draggable handle=".quiz-modal-handle">
-            <div className="quiz-modal-overlay">
+        <Draggable nodeRef={nodeRef} handle=".quiz-modal-handle">
+            <div ref={nodeRef} className="quiz-modal-overlay">
                 <div className="quiz-modal">
                     <div className="quiz-modal-handle">Drag from here</div>
                     <h2>{quiz.question}</h2>

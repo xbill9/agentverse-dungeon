@@ -68,7 +68,7 @@ def start_mini_boss_fight(request: StartMiniBossRequest):
 
     # Define turn order based on class
     if request.player_class in ["Shadowblade", "Scholar"]:
-        turn_order = ["boss", "player_1", "player_1", "boss"]
+        turn_order = ["boss", "player_1", "player_1"]
     else:
         turn_order = ["boss", "player_1"]
 

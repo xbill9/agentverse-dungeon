@@ -3,6 +3,8 @@ import axios from 'axios';
 import MainMenu from './components/MainMenu';
 import CombatScreen from './components/CombatScreen';
 import PreCombatScreen from './components/PreCombatScreen';
+import MiniBossPage from './pages/MiniBossPage';
+import UltimateBossPage from './pages/UltimateBossPage';
 import './styles.css';
 
 const API_URL = 'http://localhost:8000';
@@ -11,6 +13,7 @@ function App() {
     const [preGameState, setPreGameState] = useState(null);
     const [gameState, setGameState] = useState(null);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState('menu');
 
     const handleGameStart = async (gameType, params) => {
         try {
@@ -18,8 +21,9 @@ function App() {
             const response = await axios.post(`${API_URL}${endpoint}`, params);
             setPreGameState(response.data);
             setError(null);
+            setPage('pre-combat');
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to start game.');
+            setError(err.response?.data?.detail ? JSON.stringify(err.response.data.detail) : 'Failed to start game.');
         }
     };
 
@@ -28,18 +32,20 @@ function App() {
             const response = await axios.post(`${API_URL}/api/game/${gameId}/action`, { answer_index: answerIndex });
             setGameState(response.data);
         } catch (err) {
-            setError(err.response?.data?.detail || 'Failed to perform action.');
+            setError(err.response?.data?.detail ? JSON.stringify(err.response.data.detail) : 'Failed to perform action.');
         }
     };
 
     const handleFightStart = () => {
         setGameState(preGameState);
         setPreGameState(null);
+        setPage('combat');
     };
 
     const resetToMenu = () => {
         setGameState(null);
         setError(null);
+        setPage('menu');
     };
 
     const pollGameState = async (gameId) => {
@@ -51,22 +57,25 @@ function App() {
         }
     };
 
+    const renderPage = () => {
+        switch (page) {
+            case 'mini-boss':
+                return <MiniBossPage onGameStart={handleGameStart} />;
+            case 'ultimate-boss':
+                return <UltimateBossPage onGameStart={handleGameStart} />;
+            case 'pre-combat':
+                return <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} />;
+            case 'combat':
+                return <CombatScreen gameState={gameState} onAction={handleAction} onReset={resetToMenu} pollGameState={pollGameState} />;
+            default:
+                return <MainMenu setPage={setPage} />;
+        }
+    };
 
     return (
         <div className="App">
             {error && <div className="error-message">{error}</div>}
-            {preGameState ? (
-                <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} />
-            ) : !gameState ? (
-                <MainMenu onGameStart={handleGameStart} />
-            ) : (
-                <CombatScreen 
-                    gameState={gameState} 
-                    onAction={handleAction} 
-                    onReset={resetToMenu}
-                    pollGameState={pollGameState}
-                />
-            )}
+            {renderPage()}
         </div>
     );
 }
