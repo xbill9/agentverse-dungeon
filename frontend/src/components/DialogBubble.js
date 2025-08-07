@@ -1,0 +1,23 @@
+import React, { useState, useEffect } from 'react';
+
+const DialogBubble = ({ message, duration = 4000 }) => {
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+        if (message) {
+            setVisible(true);
+            const timer = setTimeout(() => {
+                setVisible(false);
+            }, duration);
+            return () => clearTimeout(timer);
+        }
+    }, [message, duration]);
+
+    return (
+        <div className={`dialog-bubble ${visible ? 'visible' : ''}`}>
+            {message}
+        </div>
+    );
+};
+
+export default DialogBubble;
