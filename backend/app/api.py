@@ -99,7 +99,7 @@ async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         player.session_id = session.id
         players.append(player)
 
-    boss_name = "The Monolith of Managerial Oversight"
+    boss_name = "Mergepocalypse"
     boss_max_hp = config.boss_hp[boss_name]
     boss = Boss(name=boss_name, hp=boss_max_hp, max_hp=boss_max_hp)
 

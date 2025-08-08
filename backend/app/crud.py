@@ -29,7 +29,7 @@ GAME_CONFIG = Config(
         "Perfectionism": 900,
         "Obfuscation": 1100,
         "Apathy": 700,
-        "The Monolith of Managerial Oversight": 5000,
+        "Mergepocalypse": 5000,
     }
 )
 
@@ -41,7 +41,7 @@ BOSS_WEAKNESSES = {
     "Perfectionism": "Elegant Sufficiency",
     "Obfuscation": "Elegant Sufficiency",
     "Apathy": "Unbroken Collaboration",
-    "The Monolith of Managerial Oversight": [
+    "Mergepocalypse": [
         "Inescapable Reality", "Revolutionary Rewrite",
         "Elegant Sufficiency", "Unbroken Collaboration"
     ]

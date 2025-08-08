@@ -8,7 +8,7 @@ export const BackgroundProvider = ({ children }) => {
   const [background, setBackground] = useState('');
 
   useEffect(() => {
-    
+    console.log('Background changed to:', background);
     if (background) {
       document.body.style.backgroundImage = `url(${background})`;
       document.body.style.backgroundSize = 'cover';

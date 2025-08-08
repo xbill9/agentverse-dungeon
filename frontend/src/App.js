@@ -32,9 +32,9 @@ function App() {
         }
     };
 
-    const handleAction = async (gameId, answerIndex) => {
+    const handleAction = async (gameId, action) => {
         try {
-            const response = await axios.post(`${API_URL}/api/game/${gameId}/action`, { answer_index: answerIndex });
+            const response = await axios.post(`${API_URL}/api/game/${gameId}/action`, action);
             setGameState(response.data);
             return response.data;
         } catch (err) {
