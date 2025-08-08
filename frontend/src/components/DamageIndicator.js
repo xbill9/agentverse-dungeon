@@ -1,19 +1,19 @@
 
 import React, { useEffect, useState } from 'react';
 
-const DamageIndicator = ({ damage }) => {
+const DamageIndicator = ({ damage, characterName }) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
         if (damage) {
-            console.log('DamageIndicator: Rendering with damage:', damage);
+            console.log(`DamageIndicator: Rendering with damage: ${damage} for ${characterName}`);
             setVisible(true);
             const timer = setTimeout(() => {
                 setVisible(false);
-            }, 3000);
+            }, 5000);
             return () => clearTimeout(timer);
         }
-    }, [damage]);
+    }, [damage, characterName]);
 
     if (!visible) {
         return null;

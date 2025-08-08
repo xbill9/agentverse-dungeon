@@ -6,7 +6,7 @@ import DamageIndicator from './DamageIndicator';
 const Boss = ({ boss, isTurn, dialog, imageSrc }) => {
     return (
         <div className={`character boss ${isTurn ? 'turn-active' : ''}`}>
-            <DamageIndicator damage={boss.last_damage_taken} />
+            <DamageIndicator damage={boss.last_damage_taken} characterName={boss.name} />
             <DialogBubble message={dialog} />
             <img src={imageSrc} alt={boss.name} className="character-image" />
             <div className="character-name">{boss.name}</div>

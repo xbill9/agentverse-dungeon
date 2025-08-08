@@ -1,5 +1,6 @@
 import random
 import uuid
+import asyncio
 from typing import Dict, Optional
 
 from .models import GameState, Player, Boss, Quiz, Config
@@ -102,14 +103,21 @@ def mock_boss_aoe_attack_agent(boss_name: str) -> str:
     ]
     return random.choice(attack_templates)
 
-async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: str):
+async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: str, session_id: str):
     """Player's agent responding to the boss and determining damage."""
     print(f"--- Starting New Adventure (User ID: {player_id}) ---")
 
     # --- First Turn ---
     print("\n--- Turn 1: Attacking ---")
     print(f"Boss Attack: {boss_attack}")
-    msg, dmg = await process_player_action(agent_runner, boss_attack, player_id)
+    msg, dmg = await process_player_action(agent_runner, boss_attack, player_id, session_id)
+
+    # Handle the rate limit error (which results in 0 damage) by falling back to a basic attack
+    if dmg == 0:
+        print("A2A agent returned 0 damage (rate limit). Falling back to basic attack.")
+        msg = "Quota limit reached, basic attack"
+        dmg = 50
+
     print("\n--- Parsed Result ---")
     print(f"Log: {msg}")
     print(f"Damage: {dmg}")

@@ -36,6 +36,7 @@ function App() {
         try {
             const response = await axios.post(`${API_URL}/api/game/${gameId}/action`, { answer_index: answerIndex });
             setGameState(response.data);
+            return response.data;
         } catch (err) {
             setError(err.response?.data?.detail ? JSON.stringify(err.response.data.detail) : 'Failed to perform action.');
         }
@@ -66,6 +67,7 @@ function App() {
         try {
             const response = await axios.get(`${API_URL}/api/game/${gameId}`);
             setGameState(response.data);
+            return response.data;
         } catch (err) {
             console.error("Polling error:", err);
         }

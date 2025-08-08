@@ -11,12 +11,10 @@ from .single_agent import create_heroic_action_agent
 
 router = APIRouter()
 
-
 def advance_turn(game: GameState):
     """Advances the turn to the next player or boss."""
     if not game.turn_order:
         return
-        
     game.turn_index = (game.turn_index + 1) % len(game.turn_order)
     game.current_turn = game.turn_order[game.turn_index]
     game.active_quiz = None
@@ -27,33 +25,27 @@ def check_game_over(game: GameState) -> bool:
         game.game_over = True
         game.player_won = True
         return True
-    
-    # Ultimate boss fight: if any player is defeated, the game is over
     if game.game_type == "ultimate" and any(p.hp <= 0 for p in game.players):
         game.game_over = True
         game.player_won = False
         return True
-    
-    # Mini-boss fight: if all players are defeated, the game is over
     if game.game_type == "mini" and all(p.hp <= 0 for p in game.players):
         game.game_over = True
         game.player_won = False
         return True
-        
     return False
 
 @router.post("/miniboss/start", response_model=GameState)
-def start_mini_boss_fight(request: StartMiniBossRequest):
+async def start_mini_boss_fight(request: StartMiniBossRequest):
     """Starts a new mini-boss fight."""
     config = crud.get_config()
-    
     player_max_hp = config.player_hp.get(request.player_class)
     boss_max_hp = config.boss_hp.get(request.boss_name)
 
     if not player_max_hp or not boss_max_hp:
         raise HTTPException(status_code=404, detail="Invalid class or boss name.")
 
-    hero_agent=create_heroic_action_agent(player_agent_url=request.a2a_endpoint)
+    hero_agent_runner = create_heroic_action_agent(player_agent_url=request.a2a_endpoint)
     
     player = Player(
         id="player_1",
@@ -62,35 +54,28 @@ def start_mini_boss_fight(request: StartMiniBossRequest):
         max_hp=player_max_hp,
         a2a_endpoint=request.a2a_endpoint
     )
-    player.hero_agent = hero_agent
-
-    boss = Boss(
-        name=request.boss_name,
-        hp=boss_max_hp,
-        max_hp=boss_max_hp
+    player.hero_agent = hero_agent_runner
+    session = await hero_agent_runner.session_service.create_session(
+        app_name="HeroicScribeAgent", user_id=player.id
     )
+    player.session_id = session.id
 
-    # Define turn order based on class
+    boss = Boss(name=request.boss_name, hp=boss_max_hp, max_hp=boss_max_hp)
+
     if request.player_class in ["Shadowblade", "Scholar"]:
         turn_order = ["boss", "player_1", "player_1"]
     else:
         turn_order = ["boss", "player_1"]
 
     game = crud.create_new_game(
-        players=[player], 
-        boss=boss, 
-        turn_order=turn_order, 
-        game_type="mini"
+        players=[player], boss=boss, turn_order=turn_order, game_type="mini"
     )
-    
     return game
 
-
 @router.post("/ultimateboss/start", response_model=GameState)
-def start_ultimate_boss_fight(request: StartUltimateBossRequest):
+async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
     """Starts the ultimate boss fight with a full party."""
     config = crud.get_config()
-    
     classes = ["Shadowblade", "Scholar", "Guardian", "Summoner"]
     players = []
     for i, p_class in enumerate(classes):
@@ -99,15 +84,20 @@ def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         if not max_hp or not a2a_endpoint:
             raise HTTPException(status_code=400, detail=f"Missing config for class: {p_class}")
             
-        hero_agent = create_heroic_action_agent(player_agent_url=a2a_endpoint)
-        players.append(Player(
+        hero_agent_runner = create_heroic_action_agent(player_agent_url=a2a_endpoint)
+        player = Player(
             id=f"player_{i+1}", 
             player_class=p_class, 
             hp=max_hp, 
             max_hp=max_hp,
             a2a_endpoint=a2a_endpoint,
-        ))
-        players[-1].hero_agent = hero_agent
+        )
+        player.hero_agent = hero_agent_runner
+        session = await hero_agent_runner.session_service.create_session(
+            app_name="HeroicScribeAgent", user_id=player.id
+        )
+        player.session_id = session.id
+        players.append(player)
 
     boss_name = "The Monolith of Managerial Oversight"
     boss_max_hp = config.boss_hp[boss_name]
@@ -119,14 +109,9 @@ def start_ultimate_boss_fight(request: StartUltimateBossRequest):
     ]
 
     game = crud.create_new_game(
-        players=players, 
-        boss=boss, 
-        turn_order=turn_order, 
-        game_type="ultimate"
+        players=players, boss=boss, turn_order=turn_order, game_type="ultimate"
     )
-    
     return game
-
 
 @router.get("/game/{game_id}", response_model=GameState)
 async def get_game_state(game_id: str):
@@ -151,9 +136,7 @@ async def submit_player_action(game_id: str, request: ActionRequest):
     if not game.active_quiz or game.current_turn == "boss":
         raise HTTPException(status_code=400, detail="Not a valid time to act.")
 
-    # Clear boss damage from the previous turn before applying new damage
     game.boss.last_damage_taken = None
-
     quiz = game.active_quiz
     damage = quiz.damage_point
     if request.answer_index != quiz.correct_index:
@@ -168,18 +151,16 @@ async def submit_player_action(game_id: str, request: ActionRequest):
 
     advance_turn(game)
     
-    # If the next turn is a player's, set up their quiz.
     if game.current_turn != "boss":
         player = next((p for p in game.players if p.id == game.current_turn), None)
         if player and player.hp > 0:
             game.status_message = f"{player.player_class}'s turn."
-            # The boss's last attack message is preserved for context
             boss_attack_for_player = game.last_boss_attack or "The boss is waiting."
-            print(f"3----------->player.hero_agent: {player.hero_agent}")
-            player_response, damage_to_boss = await crud.mock_player_a2a_agent(boss_attack_for_player, player.hero_agent, player.id)
+            player_response, damage_to_boss = await crud.mock_player_a2a_agent(
+                boss_attack_for_player, player.hero_agent, player.id, player.session_id
+            )
             game.active_quiz = crud.mock_damage_quiz_agent(player_response, player.player_class, damage_to_boss)
     else:
-        # If the next turn is the boss's, clear the quiz and wait for the frontend to poll.
         game.status_message = f"Waiting for {game.boss.name}..."
         game.active_quiz = None
 
@@ -191,7 +172,6 @@ async def process_turn(game: GameState) -> GameState:
     if game.game_over or game.current_turn != "boss":
         return game
 
-    # Clear player damage from the previous turn
     for p in game.players:
         p.last_damage_taken = None
 
@@ -203,11 +183,11 @@ async def process_turn(game: GameState) -> GameState:
         for player in active_players:
             damage = random.randint(75, 200)
             if player.player_class == "Guardian":
-                damage = random.randint(100, 250)  # Guardian takes more damage
+                damage = random.randint(100, 250)
             elif player.player_class == "Scholar":
-                damage = random.randint(50, 100)   # Scholar takes less damage
+                damage = random.randint(50, 100)
             else:
-                damage = random.randint(75, 200)   # Other classes take normal damage
+                damage = random.randint(75, 200)
             player.last_damage_taken = damage
             player.hp = max(0, player.hp - damage)
     else:
@@ -226,17 +206,17 @@ async def process_turn(game: GameState) -> GameState:
 
     advance_turn(game)
 
-    # Set up the next player's turn
     player = next((p for p in game.players if p.id == game.current_turn), None)
     if player and player.hp > 0:
         game.status_message = f"{player.player_class}'s turn."
         boss_attack_for_player = game.last_boss_attack or "The boss is waiting."
-        player_response, damage_to_boss = await crud.mock_player_a2a_agent(boss_attack_for_player, player.hero_agent, game.game_id)
+        player_response, damage_to_boss = await crud.mock_player_a2a_agent(
+            boss_attack_for_player, player.hero_agent, player.id, player.session_id
+        )
         game.active_quiz = crud.mock_damage_quiz_agent(player_response, player.player_class, damage_to_boss)
 
     crud.save_game(game)
     return game
-
 
 @router.get("/config", response_model=Config)
 def get_game_config():

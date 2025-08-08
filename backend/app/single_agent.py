@@ -71,24 +71,22 @@ def create_heroic_action_agent(player_agent_url: str) -> InMemoryRunner:
 async def process_player_action(
     runner: InMemoryRunner,
     prompt: str,
-    user_id: str
+    user_id: str,
+    session_id: str
 ) -> Tuple[str, int]:
     """
     Runs the agent using InMemoryRunner and returns the structured result.
 
     Args:
-        runner: The Ruuner
+        runner: The Runner
         prompt: The user's prompt for this turn.
+        user_id: The user's ID.
         session_id: A unique ID for the conversation session.
 
     Returns:
         A tuple containing the (message, damage_point).
     """
     # Use the runner pattern to asynchronously process the agent turn
-
-    session = await runner.session_service.create_session(
-      app_name="HeroicScribeAgent", user_id=user_id
-    )
     content = types.Content(
         role='user', parts=[types.Part.from_text(text=prompt)]
     )
@@ -96,7 +94,7 @@ async def process_player_action(
     print(f"------->1.Boss Attack prompt: {prompt}")
     async for event in runner.run_async(
         user_id=user_id,
-        session_id=session.id,
+        session_id=session_id,
         new_message=content,
     ):
         if not event.content or not event.content.parts:
@@ -123,7 +121,9 @@ async def process_player_action(
         print(f"2.--------->final_output:{final_output}")
     # Now, parse the final JSON output captured from the event stream
     try:
-        data = json.loads(final_output)
+        # Clean the string by removing markdown backticks and the 'json' language identifier
+        cleaned_output = final_output.strip().replace('```json', '').replace('```', '').strip()
+        data = json.loads(cleaned_output)
         message = data.get("message", "An unknown power was unleashed.")
         damage_point = int(data.get("damage_point", 0))
         print(f"3.--------->message:{message} and damage_point:{damage_point}")

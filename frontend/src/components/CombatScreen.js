@@ -30,100 +30,96 @@ const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png',
 const ranNum = Math.random() * backgrounds.length
 const randomBg = backgrounds[Math.floor(ranNum)];
 
+// Helper function to create a delay
+const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
-    const [displayGameState, setDisplayGameState] = useState(gameState);
+    // Local state for UI animations only. The game state itself comes from props.
     const [showQuiz, setShowQuiz] = useState(false);
     const [bossDialog, setBossDialog] = useState(null);
     const [playerDialog, setPlayerDialog] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
 
     const { setBackground } = useBackground();
-    const prevGameStateRef = useRef();
-    
+    const initialLoad = useRef(true);
 
-        useEffect(() => {
-        
+    useEffect(() => {
+        if (!gameState) return;
 
-        prevGameStateRef.current = gameState;
-        const prevGameState = prevGameStateRef.current;
-
-        if (!gameState) {
-            return; // Exit early if gameState is null or undefined
-        }
-        
-        // --- Background Logic ---
-        if (!gameState.game_over) {
+        // This effect now only runs on the initial load to set up the game.
+        if (initialLoad.current) {
             if (gameState.game_type === 'mini') {
                 setBackground(randomBg);
             } else if (gameState.game_type === 'ultimate') {
                 setBackground('/assets/images/bf-ultimate.png');
             }
-        }
 
-        setDisplayGameState(gameState);
-        setStatusMessage(gameState.status_message);
-        
-        
-        if (gameState.boss) {
-            console.log('CombatScreen: Boss HP', gameState.boss.current_hp);
-        }
-
-        if (gameState.game_over) {
-            setShowQuiz(false);
-            return;
-        }
-
-        // --- Animation & Dialog Logic ---
-        if (gameState.active_quiz) {
-            // Add a delay for the second attack
-            if (prevGameState && prevGameState.active_quiz && prevGameState.current_turn === gameState.current_turn) {
-                setTimeout(() => setShowQuiz(true), 1500);
+            if (gameState.current_turn === 'boss') {
+                handleBossTurn(gameState);
             } else {
                 setShowQuiz(true);
             }
-            const activePlayer = gameState.players.find(p => p.id === gameState.current_turn);
-            if (activePlayer) {
-                setPlayerDialog({ id: activePlayer.id, msg: gameState.active_quiz.msg });
-            }
-        } else {
-            setShowQuiz(false);
+            initialLoad.current = false;
         }
 
-        if (gameState.last_boss_attack) {
-            console.log('CombatScreen: Setting bossDialog to', gameState.last_boss_attack);
-            setBossDialog(gameState.last_boss_attack);
-        } else {
-            console.log('CombatScreen: gameState.last_boss_attack is null or empty');
-        }
+        // Always update the status message when gameState changes.
+        setStatusMessage(gameState.status_message);
 
-        // --- Turn Advancement Logic ---
-        if (gameState.current_turn === 'boss' && !gameState.game_over) {
-            const bossTurnPolling = setInterval(() => {
-                pollGameState(gameState.game_id);
-            }, 2000); // Poll every 2 seconds during boss turn
-            return () => clearInterval(bossTurnPolling);
-        }
-        
+    }, [gameState]);
 
-    }, [gameState, pollGameState, setBackground, showQuiz]);
+    const handleBossTurn = async (currentGame) => {
+        setStatusMessage(`Waiting for ${currentGame.boss.name}...`);
+        await wait(4000);
 
-    const handleAnswer = (answerIndex) => {
-        if (displayGameState.game_over) {
-            return <GameOverScreen gameState={displayGameState} onReset={onReset} />;
-        }
-        console.log('Quiz answer clicked:', answerIndex);
-        setShowQuiz(false);
-        setPlayerDialog(null);
-        onAction(gameState.game_id, answerIndex);
-        pollGameState(gameState.game_id); // Poll for updated game state immediately after player action
+        const newGameState = await pollGameState(currentGame.game_id);
+        if (!newGameState) return;
+
+        // The parent state is now updated. The damage indicator will show automatically.
+        // We just need to trigger the dialog bubble.
+        setBossDialog(newGameState.last_boss_attack);
+        await wait(5000);
+        setBossDialog(null);
+
+        if (newGameState.game_over) return;
+
+        setShowQuiz(true);
     };
 
-    if (!displayGameState) {
-        return null; // Or a loading spinner
+    const handleAnswer = async (answerIndex) => {
+        console.log('Quiz answer clicked:', answerIndex);
+        if (!gameState || gameState.game_over) return;
+
+        const currentQuiz = gameState.active_quiz;
+
+        setShowQuiz(false);
+        // onAction updates the parent gameState, which triggers a re-render.
+        // This re-render will show the damage on the boss.
+        const newGameState = await onAction(gameState.game_id, answerIndex);
+        if (!newGameState) return;
+
+        // After the re-render, show the player's dialog bubble.
+        if (currentQuiz) {
+            setPlayerDialog({ id: gameState.current_turn, msg: currentQuiz.msg });
+        }
+
+        await wait(3000);
+        setPlayerDialog(null);
+
+        if (newGameState.game_over) return;
+
+        if (newGameState.current_turn === 'boss') {
+            await handleBossTurn(newGameState);
+        } else {
+            setShowQuiz(true);
+        }
+    };
+
+    if (!gameState) {
+        return null; // Don't render anything if there is no game state.
     }
 
-    if (displayGameState.game_over) {
-        return <GameOverScreen gameState={displayGameState} onReset={onReset} />;
+    if (gameState.game_over) {
+        return <GameOverScreen gameState={gameState} onReset={onReset} />;
     }
 
     return (
@@ -131,25 +127,25 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
             <StatusDisplay message={statusMessage} />
             <div className="characters-wrapper">
                 <div className="character-container">
-                    <Boss 
-                        boss={displayGameState.boss} 
-                        isTurn={displayGameState.current_turn === 'boss'}
+                    <Boss
+                        boss={gameState.boss}
+                        isTurn={gameState.current_turn === 'boss'}
                         dialog={bossDialog}
                     />
                 </div>
 
-                <div className={`character-container ${displayGameState.players.length > 1 ? 'party-container' : ''}`}>
-                    {displayGameState.players.map(player => (
-                        <Player 
-                            key={player.id} 
+                <div className={`character-container ${gameState.players.length > 1 ? 'party-container' : ''}`}>
+                    {gameState.players.map(player => (
+                        <Player
+                            key={player.id}
                             player={player}
-                            isTurn={player.id === displayGameState.current_turn}
+                            isTurn={player.id === gameState.current_turn}
                             dialog={playerDialog && playerDialog.id === player.id ? playerDialog.msg : null}
                         />
                     ))}
                 </div>
             </div>
-            <QuizModal quiz={showQuiz ? displayGameState.active_quiz : null} onAnswer={handleAnswer} />
+            <QuizModal quiz={showQuiz ? gameState.active_quiz : null} onAnswer={handleAnswer} />
         </div>
     );
 };
