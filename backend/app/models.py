@@ -1,6 +1,6 @@
 import uuid
-from pydantic import BaseModel, Field, ConfigDict
-from typing import List, Optional, Dict
+from pydantic import BaseModel, Field, ConfigDict, PrivateAttr
+from typing import List, Optional, Dict, Any
 
 # --- Player & Boss Models ---
 
@@ -13,6 +13,33 @@ class Player(Character):
     id: str
     player_class: str
     a2a_endpoint: str
+    _hero_agent: PrivateAttr = PrivateAttr(default=None)
+    _agent_runner: PrivateAttr = PrivateAttr(default=None)
+    _session_id: PrivateAttr = PrivateAttr(default=None)
+
+    @property
+    def hero_agent(self):
+        return self._hero_agent
+
+    @hero_agent.setter
+    def hero_agent(self, agent: Any):
+        self._hero_agent = agent
+
+    @property
+    def agent_runner(self):
+        return self._agent_runner
+
+    @agent_runner.setter
+    def agent_runner(self, runner: Any):
+        self._agent_runner = runner
+
+    @property
+    def session_id(self):
+        return self._session_id
+
+    @session_id.setter
+    def session_id(self, session_id: str):
+        self._session_id = session_id
 
 class Boss(Character):
     name: str
@@ -47,7 +74,7 @@ class GameState(BaseModel):
 class StartMiniBossRequest(BaseModel):
     player_class: str
     boss_name: str
-    a2a_endpoint: str # Not used in mock, but part of the spec
+    a2a_endpoint: str = "https://summoner-agent-69500317010.us-central1.run.app"
 
 class StartUltimateBossRequest(BaseModel):
     a2a_endpoints: Dict[str, str]

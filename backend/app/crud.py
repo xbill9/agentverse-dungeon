@@ -3,6 +3,11 @@ import uuid
 from typing import Dict, Optional
 
 from .models import GameState, Player, Boss, Quiz, Config
+from .shadowblade_quizzes import shadowblade_quizzes
+from .scholar_quizzes import scholar_quizzes
+from .guardian_quizzes import guardian_quizzes
+from .summoner_quizzes import summoner_quizzes
+from .single_agent import process_player_action
 
 # In-memory "database"
 game_db: Dict[str, GameState] = {}
@@ -97,37 +102,54 @@ def mock_boss_aoe_attack_agent(boss_name: str) -> str:
     ]
     return random.choice(attack_templates)
 
-def mock_player_a2a_agent(boss_attack: str, endpoint: str):
-    """Simulates the player's agent responding to the boss."""
-    # In a real scenario, this would be an external call to the `endpoint`.
-    # Here, we just acknowledge the attack and which endpoint would be used.
-    print(f"MOCK A2A CALL to {endpoint} with attack: '{boss_attack[:30]}...'")
-    return f"My agent at {endpoint} sees the attack and prepares a counter-strategy."
+async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: str):
+    """Player's agent responding to the boss and determining damage."""
+    print(f"--- Starting New Adventure (User ID: {player_id}) ---")
+
+    # --- First Turn ---
+    print("\n--- Turn 1: Attacking ---")
+    print(f"Boss Attack: {boss_attack}")
+    msg, dmg = await process_player_action(agent_runner, boss_attack, player_id)
+    print("\n--- Parsed Result ---")
+    print(f"Log: {msg}")
+    print(f"Damage: {dmg}")
+    return msg, dmg
 
 
-def mock_damage_quiz_agent(player_response: str) -> Quiz:
-    """Generates a quiz and damage based on the player's (mocked) response."""
-    questions = [
-        {
-            "question": "What is 2 + 2?",
-            "answers": ["3", "4", "5"],
-            "correct_index": 1,
-        },
-        {
-            "question": "What is the color of the sky?",
-            "answers": ["Blue", "Green", "Red"],
-            "correct_index": 0,
-        },
-        {
-            "question": "Which of these is a primary color?",
-            "answers": ["Orange", "Green", "Yellow"],
-            "correct_index": 2,
-        },
-    ]
+def mock_damage_quiz_agent(player_response: str, player_class: str, damage_to_boss: int) -> Quiz:
+    """Generates a quiz and damage based on the player's (mocked) response and class."""
+    class_quizzes = {
+        "Shadowblade": shadowblade_quizzes,
+        "Scholar": scholar_quizzes,
+        "Guardian": guardian_quizzes,
+        "Summoner": summoner_quizzes,
+    }
+    
+    questions = class_quizzes.get(player_class, [])
+    if not questions:
+        # Fallback to a generic quiz if class-specific quizzes are not found
+        questions = [
+            {
+                "question": "What is 2 + 2?",
+                "answers": ["3", "4", "5"],
+                "correct_index": 1,
+            },
+            {
+                "question": "What is the color of the sky?",
+                "answers": ["Blue", "Green", "Red"],
+                "correct_index": 0,
+            },
+            {
+                "question": "Which of these is a primary color?",
+                "answers": ["Orange", "Green", "Yellow"],
+                "correct_index": 2,
+            },
+        ]
+    
     selected_quiz = random.choice(questions)
     
     return Quiz(
         **selected_quiz,
-        damage_point=random.randint(150, 300),
+        damage_point=damage_to_boss,
         msg=f"The player prepares a powerful, well-reasoned counter-attack! {player_response}"
     )
