@@ -3,7 +3,6 @@ import Boss from './Boss';
 import Player from './Player';
 import QuizModal from './QuizModal';
 import StatusDisplay from './StatusDisplay';
-import { useBackground } from '../contexts/BackgroundContext';
 
 const GameOverScreen = ({ gameState, onReset }) => {
     const { player_won, game_type, boss } = gameState;
@@ -26,9 +25,6 @@ const GameOverScreen = ({ gameState, onReset }) => {
         </div>
     );
 };
-const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png', '/assets/images/bf-bg-3.png', '/assets/images/bf-bg-4.png'];
-const ranNum = Math.random() * backgrounds.length
-const randomBg = backgrounds[Math.floor(ranNum)];
 
 // Helper function to create a delay
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -40,17 +36,8 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [statusMessage, setStatusMessage] = useState("");
     const [actingCharacter, setActingCharacter] = useState(null);
 
-    const { setBackground } = useBackground();
-
     useEffect(() => {
         if (!gameState) return;
-
-        // Set the background
-        if (gameState.game_type === 'mini') {
-            setBackground(randomBg);
-        } else if (gameState.game_type === 'ultimate') {
-            setBackground('/assets/images/bf-ultimate.png');
-        }
 
         // Set the status message
         setStatusMessage(gameState.status_message);
@@ -64,7 +51,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         } else {
             setShowQuiz(true);
         }
-    }, [gameState, setBackground]);
+    }, [gameState]);
 
     const handleBossTurn = async (currentGame) => {
         setStatusMessage(`Waiting for ${currentGame.boss.name}...`);

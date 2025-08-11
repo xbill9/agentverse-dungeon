@@ -365,3 +365,12 @@ body {
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+
+.error-message {
+    color: #d9534f;
+    font-size: 1.2rem;
+    padding: 1rem;
+    border: 1px solid #d9534f;
+    border-radius: 5px;
+    background-color: #2a2a2a;
+}
