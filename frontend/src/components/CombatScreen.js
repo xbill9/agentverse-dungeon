@@ -100,7 +100,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         if (!newGameState) return;
 
         if (currentQuiz) {
-            setPlayerDialog({ id: newGameState.current_turn, msg: currentQuiz.msg });
+            setPlayerDialog({ id: gameState.current_turn, msg: currentQuiz.msg });
         }
 
         await wait(3000);
