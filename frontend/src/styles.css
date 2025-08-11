@@ -104,6 +104,35 @@ body {
     background-color: #c9302c;
 }
 
+/* --- Turn Animation Effects --- */
+
+/* Shake Effect */
+.effect-shake .character-image {
+    animation: shake 0.5s infinite;
+}
+
+/* Pulsating Glow Effect */
+@keyframes pulsate-glow {
+    0% { filter: drop-shadow(0 0 5px rgba(255, 255, 150, 0.7)); }
+    50% { filter: drop-shadow(0 0 20px rgba(255, 255, 150, 0.9)); }
+    100% { filter: drop-shadow(0 0 5px rgba(255, 255, 150, 0.7)); }
+}
+.effect-pulsate-glow .character-image {
+    animation: pulsate-glow 2s infinite ease-in-out, shake 0.5s infinite;
+}
+
+/* Shrink/Enlarge and Shake Effect */
+@keyframes shrink-enlarge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(0.8); }
+}
+.effect-desaturate {
+    animation: shrink-enlarge 3s infinite ease-in-out;
+}
+.effect-desaturate .character-image {
+    animation: shake 0.5s infinite;
+}
+
 
 /* Combat Screen */
 .combat-screen {
@@ -112,11 +141,12 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 2rem;
+    position: relative;
 }
 
 .status-display {
     position: absolute;
-    top: 4rem;
+    top: 1rem;
     left: 50%;
     transform: translateX(-50%);
     width: 50%;
@@ -124,9 +154,8 @@ body {
     font-size: 1.5rem;
     font-weight: bold;
     padding: 1rem;
-    background-color: rgba(42, 42, 42, 0.6);
-    border: 1px solid #555;
-    border-radius: 10px;
+    background-color: transparent;
+    border: none;
     z-index: 10;
 }
 
@@ -178,7 +207,7 @@ body {
 
 .character-info {
     position: absolute;
-    bottom: -40px;
+    bottom: -20px;
     width: 100%;
 }
 
@@ -195,15 +224,10 @@ body {
 
 .character.turn-active {
     background: radial-gradient(ellipse at center, rgba(255, 255, 0, 0.5) 0%, rgba(0,0,0,0) 70%);
-    animation: shake 0.5s infinite;
 }
 
 .character.boss.turn-active {
     background: radial-gradient(ellipse at center, rgba(217, 83, 79, 0.5) 0%, rgba(0,0,0,0) 70%);
-}
-
-.character.turn-active .character-image {
-    animation: shake 0.5s infinite;
 }
 
 /* HP Bar */
@@ -378,4 +402,16 @@ body {
     border: 1px solid #d9534f;
     border-radius: 5px;
     background-color: #2a2a2a;
+}
+
+/* Flip and Shake Effect */
+@keyframes flip-horizontal {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(-1); }
+}
+.effect-flip-and-shake {
+    animation: flip-horizontal 2s infinite;
+}
+.effect-flip-and-shake .character-image {
+    animation: shake 0.5s infinite;
 }

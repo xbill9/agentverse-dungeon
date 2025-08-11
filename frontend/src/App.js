@@ -47,10 +47,8 @@ function App() {
             if (preGameState.game_type === 'mini') {
                 const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png', '/assets/images/bf-bg-3.png', '/assets/images/bf-bg-4.png'];
                 const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
-                console.log('handleFightStart: Setting mini-boss background to', randomBg);
                 setBackground(randomBg);
             } else if (preGameState.game_type === 'ultimate') {
-                console.log('handleFightStart: Setting ultimate boss background');
                 setBackground('/assets/images/bf-ultimate.png');
             }
         }

@@ -5,7 +5,6 @@ const HomePage = () => {
   const { setBackground } = useBackground();
 
   useEffect(() => {
-    console.log('HomePage: Setting background');
     setBackground('/assets/images/homepage.png');
   }, [setBackground]);
 

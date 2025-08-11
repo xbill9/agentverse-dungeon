@@ -29,21 +29,41 @@ const GameOverScreen = ({ gameState, onReset }) => {
 // Helper function to create a delay
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+const animationEffects = ['effect-shake', 'effect-pulsate-glow', 'effect-desaturate', 'effect-flip-and-shake'];
+
 const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [showQuiz, setShowQuiz] = useState(false);
     const [bossDialog, setBossDialog] = useState(null);
     const [playerDialog, setPlayerDialog] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [actingCharacter, setActingCharacter] = useState(null);
+    const [currentEffect, setCurrentEffect] = useState('');
+
+    useEffect(() => {
+        let intervalId;
+
+        if (actingCharacter) {
+            let effectIndex = 0;
+            const cycleEffects = () => {
+                setCurrentEffect(animationEffects[effectIndex]);
+                effectIndex = (effectIndex + 1) % animationEffects.length;
+            };
+            cycleEffects();
+            intervalId = setInterval(cycleEffects, 6000);
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+            setCurrentEffect('');
+        };
+    }, [actingCharacter]);
 
     useEffect(() => {
         if (!gameState) return;
 
-        // Set the status message
         setStatusMessage(gameState.status_message);
-
-        // Set the active character and handle the turn
-        console.log('Setting acting character:', gameState.current_turn);
         setActingCharacter(gameState.current_turn);
 
         if (gameState.current_turn === 'boss') {
@@ -51,6 +71,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         } else {
             setShowQuiz(true);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState]);
 
     const handleBossTurn = async (currentGame) => {
@@ -61,7 +82,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         if (!newGameState) return;
 
         setBossDialog(newGameState.last_boss_attack);
-        await wait(5000);
+        await wait(8000);
         setBossDialog(null);
 
         if (newGameState.game_over) return;
@@ -103,6 +124,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                         boss={gameState.boss}
                         isTurn={actingCharacter === 'boss'}
                         dialog={bossDialog}
+                        effectClass={actingCharacter === 'boss' ? currentEffect : ''}
                     />
                 </div>
 
@@ -113,6 +135,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                             player={player}
                             isTurn={actingCharacter === player.id}
                             dialog={playerDialog && playerDialog.id === player.id ? playerDialog.msg : null}
+                            effectClass={actingCharacter === player.id ? currentEffect : ''}
                         />
                     ))}
                 </div>
