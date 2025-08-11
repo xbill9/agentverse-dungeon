@@ -8,7 +8,7 @@ const Player = ({ player, isTurn, dialog, effectClass }) => {
     const imageName = isTurn ? `${player.player_class}-motion` : player.player_class;
     const imageSrc = `/assets/images/players/${imageName}.png`;
     return (
-        <div className={`character ${isTurn ? 'turn-active' : ''} ${effectClass}`}>
+        <div className={`character ${player.player_class} ${isTurn ? 'turn-active' : ''} ${effectClass}`}>
             <AttackEffect trigger={player.last_damage_taken} />
             <DamageIndicator damage={player.last_damage_taken} characterName={player.player_class} />
             <DialogBubble message={dialog} />

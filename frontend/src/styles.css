@@ -21,7 +21,7 @@ body {
 /* App Container */
 .App {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1800px;
     margin: 0 auto;
 }
 
@@ -150,16 +150,16 @@ body {
 
 .status-display {
     position: absolute;
-    top: 1rem;
+    top: 0.1rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 50%;
+    width: 25%;
     text-align: center;
     font-size: 1.5rem;
     font-weight: bold;
     padding: 1rem;
-    background-color: transparent;
-    border: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
     z-index: 10;
 }
 
@@ -173,10 +173,11 @@ body {
 }
 
 .characters-wrapper {
-    display: flex;
-    justify-content: space-around;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
     width: 100%;
+    gap: 5rem; /* Add some gap between the columns */
 }
 
 .character-container {
@@ -187,14 +188,46 @@ body {
 }
 
 .party-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
+    position: relative;
+    width: 1000px;
+    height: 650px;
+    margin-top: 2rem;
+}
+
+.party-container .character.Guardian,
+.party-container .character.Scholar,
+.party-container .character.Shadowblade,
+.party-container .character.Summoner {
+    position: absolute;
+}
+
+.party-container .character.Guardian {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+}
+
+.party-container .character.Scholar {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+}
+
+.party-container .character.Shadowblade {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.party-container .character.Summoner {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .character {
-    width: 150px;
-    height: 150px;
+    width: 300px;
+    height: 300px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -224,8 +257,8 @@ body {
 }
 
 .character.boss {
-    width: 200px;
-    height: 200px;
+    width: 400px;
+    height: 400px;
     
 }
 
