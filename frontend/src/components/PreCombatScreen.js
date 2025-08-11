@@ -7,8 +7,9 @@ const PreCombatScreen = ({ gameState, onStartFight }) => {
     const { setBackground } = useBackground();
 
     useEffect(() => {
+        console.log('PreCombatScreen: Setting background');
         setBackground('/assets/images/enterinfo.png');
-    }, [setBackground]);
+    }, []);
     return (
         <div className="pre-combat-screen">
             <h1>Get Ready to Fight!</h1>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const DialogBubble = ({ message, duration = 4000 }) => {
+const DialogBubble = ({ message, duration = 8000 }) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {

@@ -9,7 +9,7 @@ const Player = ({ player, isTurn, dialog }) => {
     return (
         <div className={`character ${isTurn ? 'turn-active' : ''}`}>
             <DamageIndicator damage={player.last_damage_taken} characterName={player.player_class} />
-            <DialogBubble message={dialog} duration={5000} />
+            <DialogBubble message={dialog} />
             <img src={imageSrc} alt={player.player_class} className="character-image" />
             <div className="character-info">
                 <div className="character-name">{player.player_class}</div>

@@ -44,11 +44,13 @@ function App() {
 
     const handleFightStart = () => {
         if (preGameState) {
-            if (preGameState.game_type === 'mini-boss') {
+            if (preGameState.game_type === 'mini') {
                 const backgrounds = ['/assets/images/bf-bg-1.png', '/assets/images/bf-bg-2.png', '/assets/images/bf-bg-3.png', '/assets/images/bf-bg-4.png'];
                 const randomBg = backgrounds[Math.floor(Math.random() * backgrounds.length)];
+                console.log('handleFightStart: Setting mini-boss background to', randomBg);
                 setBackground(randomBg);
             } else if (preGameState.game_type === 'ultimate') {
+                console.log('handleFightStart: Setting ultimate boss background');
                 setBackground('/assets/images/bf-ultimate.png');
             }
         }
@@ -80,7 +82,7 @@ function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/mini-boss" element={<MiniBossPage onGameStart={handleGameStart} />} />
                 <Route path="/ultimate-boss" element={<UltimateBossPage onGameStart={handleGameStart} />} />
-                <Route path="/pre-combat" element={preGameState ? <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} /> : <HomePage />} />
+                <Route path="/pre-combat" element={preGameState ? <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} /> : null} />
                 <Route path="/combat" element={<CombatScreen gameState={gameState} onAction={handleAction} onReset={resetToMenu} pollGameState={pollGameState} />} />
             </Routes>
         </div>

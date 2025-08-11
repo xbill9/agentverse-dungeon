@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useMemo } from 'react';
 
 const BackgroundContext = createContext();
 
@@ -20,8 +20,10 @@ export const BackgroundProvider = ({ children }) => {
     }
   }, [background]);
 
+  const value = useMemo(() => ({ setBackground }), []);
+
   return (
-    <BackgroundContext.Provider value={{ setBackground }}>
+    <BackgroundContext.Provider value={value}>
       {children}
     </BackgroundContext.Provider>
   );
