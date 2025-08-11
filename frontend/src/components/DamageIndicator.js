@@ -6,12 +6,17 @@ const DamageIndicator = ({ damage, characterName }) => {
 
     useEffect(() => {
         if (damage) {
-            console.log(`DamageIndicator: Rendering with damage: ${damage} for ${characterName}`);
-            setVisible(true);
+            const showTimer = setTimeout(() => {
+                setVisible(true);
+            }, 300); // Delay to show after attack effect
+
             const timer = setTimeout(() => {
                 setVisible(false);
             }, 8000);
-            return () => clearTimeout(timer);
+            return () => {
+                clearTimeout(showTimer);
+                clearTimeout(timer);
+            };
         }
     }, [damage, characterName]);
 
