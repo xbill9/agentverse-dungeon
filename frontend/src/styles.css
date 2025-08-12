@@ -502,10 +502,35 @@ body {
 @keyframes attack-fade-out {
     from {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1);
     }
     to {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1.5);
     }
+}
+
+@keyframes attack-fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* Mini Boss Size Adjustment */
+.character-container .character.boss.mini-boss-size {
+    width: 300px !important; /* Even smaller size for mini-boss */
+    height: 300px !important; /* Even smaller size for mini-boss */
+}
+
+.character-container .character.boss.mini-boss-size .character-image-wrapper {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.character-container .character.boss.mini-boss-size .character-image {
+    max-width: 100% !important; /* Ensure image fills the new container */
+    max-height: 100% !important; /* Ensure image fills the new container */
+    width: 100% !important;
+    height: 100% !important;
 }

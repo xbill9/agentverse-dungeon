@@ -148,6 +148,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                         dialog={bossDialog}
                         effectClass={actingCharacter === 'boss' ? currentEffect : ''}
                         cyclingDialog={bossCyclingDialog}
+                        gameType={gameState.game_type}
                     />
                 </div>
 

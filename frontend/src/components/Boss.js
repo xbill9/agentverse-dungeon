@@ -4,11 +4,12 @@ import DialogBubble from './DialogBubble';
 import DamageIndicator from './DamageIndicator';
 import AttackEffect from './AttackEffect';
 
-const Boss = ({ boss, isTurn, dialog, effectClass, cyclingDialog }) => {
+const Boss = ({ boss, isTurn, dialog, effectClass, cyclingDialog, gameType }) => {
     const imageName = isTurn ? `${boss.name}-motion` : boss.name;
     const imageSrc = `/assets/images/bosses/${imageName}.png`;
+    console.log('Boss component - gameType:', gameType);
     return (
-        <div className={`character boss ${isTurn ? 'turn-active' : ''} ${effectClass}`}>
+        <div className={`character boss ${isTurn ? 'turn-active' : ''} ${effectClass} ${gameType !== 'ultimate' ? 'mini-boss-size' : ''}`}>
             <AttackEffect trigger={boss.last_damage_taken} />
             <DamageIndicator damage={boss.last_damage_taken} characterName={boss.name} />
             <DialogBubble message={dialog} /> {/* For attack message */}

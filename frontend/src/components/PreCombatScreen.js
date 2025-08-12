@@ -14,7 +14,7 @@ const PreCombatScreen = ({ gameState, onStartFight }) => {
             <h1>Get Ready to Fight!</h1>
             <div className="pre-combat-characters">
                 <div className="character-container">
-                    <Boss boss={gameState.boss} />
+                    <Boss boss={gameState.boss} gameType={gameState.game_type} />
                 </div>
                 <div className={`character-container ${gameState.players.length > 1 ? 'party-container' : ''}`}>
                     {gameState.players.map(player => (
