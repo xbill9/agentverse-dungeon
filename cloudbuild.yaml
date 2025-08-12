@@ -21,4 +21,4 @@ images:
 substitutions:
   _REGION: us-central1 
   _REPO_NAME: agentverse-repo 
-  _SERVICE_NAME: agentverse-dungoen 
+  _SERVICE_NAME: agentverse-dungeon 
