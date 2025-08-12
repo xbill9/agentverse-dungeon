@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Install backend dependencies
 COPY backend/requirements.txt ./backend/
-RUN pip install --no-cache-dir -r ./backend/requirements.txt
+RUN pip install --no-cache-dir -r ./backend/requirements.txt --break-system-packages
 
 # Install frontend dependencies
 COPY frontend/package.json frontend/package-lock.json ./frontend/
