@@ -22,4 +22,4 @@ EXPOSE 3000 8000
 # Make start script executable and set it as the command
 COPY start.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start.sh
-CMD ["/usr/local/bin/start.sh"]
+CMD /usr/local/bin/start.sh
