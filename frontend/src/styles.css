@@ -335,10 +335,10 @@ body {
     top: -20px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 2em;
+    font-size: 4em;
     color: red;
     font-weight: bold;
-    animation: fadeOut 3s forwards;
+    animation: fadeOut 6s forwards;
     z-index: 2000;
 }
 
@@ -477,7 +477,7 @@ body {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    animation: attack-fade-out 2s forwards;
+    animation: attack-fade-out 4s forwards;
     z-index: 1500;
 }
 

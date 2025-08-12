@@ -12,7 +12,7 @@ const DamageIndicator = ({ damage, characterName }) => {
 
             const timer = setTimeout(() => {
                 setVisible(false);
-            }, 8000);
+            }, 16000);
             return () => {
                 clearTimeout(showTimer);
                 clearTimeout(timer);
