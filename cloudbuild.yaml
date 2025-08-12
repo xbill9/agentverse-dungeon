@@ -13,9 +13,12 @@ steps:
     - '--region=${_REGION}'
     - '--platform=managed'
     - '--allow-unauthenticated'
+    - '--port=3000'
+    - '--cpu=1'
+    - '--memory=2G'
 images:
 - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest'
 substitutions:
-  _REGION: us-central1 # Replace with your desired region
-  _REPO_NAME: cloud-run-source-deploy # Replace with your Artifact Registry repository name
-  _SERVICE_NAME: my-service # Replace with your Cloud Run service name
+  _REGION: us-central1 
+  _REPO_NAME: agentverse-repo 
+  _SERVICE_NAME: agentverse-dungoen 
