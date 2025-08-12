@@ -351,6 +351,16 @@ body {
     }
 }
 
+@keyframes rotate-dialog {
+    0% { transform: translateX(-50%) rotateY(0deg); }
+    50% { transform: translateX(-50%) rotateY(180deg); }
+    100% { transform: translateX(-50%) rotateY(360deg); }
+}
+
+.dialog-bubble.rotating {
+    animation: rotate-dialog 6s infinite linear;
+}
+
 /* Quiz Modal */
 .quiz-modal-overlay {
     position: fixed;
@@ -372,8 +382,9 @@ body {
     border-radius: 0;
     border: 1px solid #555;
     width: 100%;
-    max-width: 550px; /* Make modal smaller */
+    max-width: 1100px; /* Make modal smaller */
     pointer-events: auto; /* Re-enable pointer events for the modal */
+    font-size: 20px; /* Increased font size by 2px */
 }
 
 .quiz-modal h2 {
@@ -430,6 +441,13 @@ body {
 
 .game-over-screen h1.win {
     color: #5cb85c;
+}
+
+.return-home-btn {
+    position: absolute;
+    bottom: 100px;
+    right: 20px;
+    z-index: 100;
 }
 
 @keyframes shake {

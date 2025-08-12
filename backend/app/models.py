@@ -43,6 +43,7 @@ class Player(Character):
 
 class Boss(Character):
     name: str
+    dialog_phrases: List[str] = Field(default_factory=list)
 
 # --- Quiz Model ---
 

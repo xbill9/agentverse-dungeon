@@ -40,9 +40,9 @@ async def start_mini_boss_fight(request: StartMiniBossRequest):
     """Starts a new mini-boss fight."""
     config = crud.get_config()
     player_max_hp = config.player_hp.get(request.player_class)
-    boss_max_hp = config.boss_hp.get(request.boss_name)
+    boss_max_hp = random.randint(1100, 1300) # Random HP for mini-boss
 
-    if not player_max_hp or not boss_max_hp:
+    if not player_max_hp: # Only check player_max_hp now
         raise HTTPException(status_code=404, detail="Invalid class or boss name.")
 
     hero_agent_runner = create_heroic_action_agent(player_agent_url=request.a2a_endpoint)
@@ -60,7 +60,12 @@ async def start_mini_boss_fight(request: StartMiniBossRequest):
     )
     player.session_id = session.id
 
-    boss = Boss(name=request.boss_name, hp=boss_max_hp, max_hp=boss_max_hp)
+    boss = Boss(
+        name=request.boss_name,
+        hp=boss_max_hp,
+        max_hp=boss_max_hp,
+        dialog_phrases=crud.BOSS_DIALOGUES.get(request.boss_name, [])
+    )
 
     if request.player_class in ["Shadowblade", "Scholar"]:
         turn_order = ["boss", "player_1", "player_1"]
@@ -100,12 +105,17 @@ async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         players.append(player)
 
     boss_name = "Mergepocalypse"
-    boss_max_hp = config.boss_hp[boss_name]
-    boss = Boss(name=boss_name, hp=boss_max_hp, max_hp=boss_max_hp)
+    boss_max_hp = 6500 # Fixed HP for ultimate boss
+    boss = Boss(
+        name=boss_name,
+        hp=boss_max_hp,
+        max_hp=boss_max_hp,
+        dialog_phrases=crud.BOSS_DIALOGUES.get(boss_name, [])
+    )
 
     turn_order = [
         "boss", "player_1", "player_2", "player_4", "player_1", "player_3", 
-        "boss", "player_2", "player_1", "player_4", "player_1", "player_2", "player_1"
+        "boss", "player_3", "player_2", "player_1", "player_4", "player_1", "player_2", "player_1"
     ]
 
     game = crud.create_new_game(
@@ -157,7 +167,7 @@ async def submit_player_action(game_id: str, request: ActionRequest):
             game.status_message = f"{player.player_class}'s turn."
             boss_attack_for_player = game.last_boss_attack or "The boss is waiting."
             player_response, damage_to_boss = await crud.mock_player_a2a_agent(
-                boss_attack_for_player, player.hero_agent, player.id, player.session_id
+                boss_attack_for_player, player.hero_agent, player.id, player.session_id, player.player_class
             )
             game.active_quiz = crud.mock_damage_quiz_agent(player_response, player.player_class, damage_to_boss)
     else:
@@ -181,17 +191,18 @@ async def process_turn(game: GameState) -> GameState:
         game.last_boss_attack = crud.mock_boss_aoe_attack_agent(game.boss.name)
         active_players = [p for p in game.players if p.hp > 0]
         for player in active_players:
-            damage = random.randint(75, 200)
+            damage = random.randint(60, 120) # Default for Shadowblade & Summoner
             if player.player_class == "Guardian":
-                damage = random.randint(100, 250)
+                damage = random.randint(100, 150)
             elif player.player_class == "Scholar":
-                damage = random.randint(50, 100)
-            else:
-                damage = random.randint(75, 200)
+                damage = random.randint(40, 80)
             player.last_damage_taken = damage
             player.hp = max(0, player.hp - damage)
     else:
-        boss_damage = random.randint(50, 150)
+        boss_damage = random.randint(110, 140) # Mini-boss damage range
+        # Add 1/8 chance for half damage
+        if random.random() < 0.125: # 0.125 is 1/8
+            boss_damage //= 2
         attack_msg = crud.mock_boss_attack_agent(game.boss.name, boss_damage)
         game.last_boss_attack = attack_msg
         active_players = [p for p in game.players if p.hp > 0]
@@ -211,7 +222,7 @@ async def process_turn(game: GameState) -> GameState:
         game.status_message = f"{player.player_class}'s turn."
         boss_attack_for_player = game.last_boss_attack or "The boss is waiting."
         player_response, damage_to_boss = await crud.mock_player_a2a_agent(
-            boss_attack_for_player, player.hero_agent, player.id, player.session_id
+            boss_attack_for_player, player.hero_agent, player.id, player.session_id, player.player_class
         )
         game.active_quiz = crud.mock_damage_quiz_agent(player_response, player.player_class, damage_to_boss)
 

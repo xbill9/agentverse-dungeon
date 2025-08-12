@@ -33,7 +33,8 @@ const animationEffects = ['effect-shake', 'effect-pulsate-glow', 'effect-desatur
 
 const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [showQuiz, setShowQuiz] = useState(false);
-    const [bossDialog, setBossDialog] = useState(null);
+    const [bossDialog, setBossDialog] = useState(null); // For boss attack message
+    const [bossCyclingDialog, setBossCyclingDialog] = useState(null); // For cycling boss dialog
     const [playerDialog, setPlayerDialog] = useState(null);
     const [statusMessage, setStatusMessage] = useState("");
     const [actingCharacter, setActingCharacter] = useState(null);
@@ -59,6 +60,27 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
             setCurrentEffect('');
         };
     }, [actingCharacter]);
+
+    useEffect(() => {
+        let dialogIntervalId;
+        if (actingCharacter === 'boss' && gameState && gameState.boss.dialog_phrases.length > 0) {
+            let dialogIndex = Math.floor(Math.random() * gameState.boss.dialog_phrases.length); // Start from a random phrase
+            const cycleBossDialog = () => {
+                setBossCyclingDialog(gameState.boss.dialog_phrases[dialogIndex]);
+                dialogIndex = (dialogIndex + 1) % gameState.boss.dialog_phrases.length;
+            };
+            cycleBossDialog(); // Display first dialog immediately
+            dialogIntervalId = setInterval(cycleBossDialog, 6000); // Cycle every 6 seconds
+        } else {
+            setBossCyclingDialog(null); // Clear dialog when not boss's turn
+        }
+
+        return () => {
+            if (dialogIntervalId) {
+                clearInterval(dialogIntervalId);
+            }
+        };
+    }, [actingCharacter, gameState]); // Depend on actingCharacter and gameState for phrases
 
     useEffect(() => {
         if (!gameState) return;
@@ -125,6 +147,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                         isTurn={actingCharacter === 'boss'}
                         dialog={bossDialog}
                         effectClass={actingCharacter === 'boss' ? currentEffect : ''}
+                        cyclingDialog={bossCyclingDialog}
                     />
                 </div>
 

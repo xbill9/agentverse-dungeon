@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useBackground } from './contexts/BackgroundContext';
 import axios from 'axios';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import MainMenu from './components/MainMenu';
 import CombatScreen from './components/CombatScreen';
 import PreCombatScreen from './components/PreCombatScreen';
@@ -19,6 +19,9 @@ function App() {
     const navigate = useNavigate();
 
     const { setBackground } = useBackground();
+
+    const location = useLocation();
+    const showReturnHomeButton = location.pathname === '/combat' || location.pathname === '/pre-combat';
 
     const handleGameStart = async (gameType, params) => {
         try {
@@ -83,6 +86,9 @@ function App() {
                 <Route path="/pre-combat" element={preGameState ? <PreCombatScreen gameState={preGameState} onStartFight={handleFightStart} /> : null} />
                 <Route path="/combat" element={<CombatScreen gameState={gameState} onAction={handleAction} onReset={resetToMenu} pollGameState={pollGameState} />} />
             </Routes>
+            {showReturnHomeButton && (
+                <button onClick={resetToMenu} className="btn return-home-btn">Return to Home</button>
+            )}
         </div>
     );
 }
