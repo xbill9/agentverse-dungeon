@@ -16,7 +16,7 @@ const HomePage = () => {
           <button className="btn">Enter The Crimson Keep</button>
         </Link>
         <Link to="/ultimate-boss">
-          <button className="btn btn-ultimate" disabled>Enter The Void's Maw</button>
+          <button className="btn btn-ultimate">Enter The Void's Maw</button>
         </Link>
       </div>
     </div>

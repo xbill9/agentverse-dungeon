@@ -263,8 +263,8 @@ body {
 }
 
 .character.boss {
-    width: 400px;
-    height: 400px;
+    width: 600px;
+    height: 600px;
     
 }
 
@@ -312,18 +312,18 @@ body {
 /* Dialog Bubble */
 .dialog-bubble {
     position: absolute;
-    bottom: 110%;
+    bottom: 350px; /* Moved up further */
     left: 50%;
     transform: translateX(-50%);
     background-color: rgba(0, 0, 0, 0.8);
     color: white;
     padding: 15px 20px;
     border-radius: 0;
-    width: 600px;
+    width: 700px; /* Made wider */
     opacity: 0;
     transition: opacity 0.5s;
     z-index: 10;
-    font-size: 1.2rem;
+    font-size: 1.4rem; /* Increased font size */
 }
 
 .dialog-bubble.visible {
