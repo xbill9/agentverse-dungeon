@@ -11,7 +11,7 @@ app = FastAPI(title="Boss Fight Dungeon")
 # CORS (Cross-Origin Resource Sharing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="http://.*localhost:.*",  # Allow all localhost origins, including agent subdomains
+    allow_origin_regex="https?://.*(localhost|run\.app)(:\d+)?|https?://.*\.run\.app",  # Allow localhost and all Cloud Run domains
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"]
