@@ -22,14 +22,14 @@ GAME_CONFIG = Config(
         "Summoner": 400,
     },
     boss_hp={
-        "Procrastination": 1000,
-        "Hype": 800,
-        "Dogma": 1200,
-        "Legacy": 1500,
-        "Perfectionism": 900,
-        "Obfuscation": 1100,
-        "Apathy": 700,
-        "Mergepocalypse": 5000,
+        "Procrastination": 640,
+        "Hype": 512,
+        "Dogma": 768,
+        "Legacy": 1000,
+        "Perfectionism": 576,
+        "Obfuscation": 704,
+        "Apathy": 448,
+        "Mergepocalypse": 3200,
     }
 )
 

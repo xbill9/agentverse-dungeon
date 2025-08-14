@@ -1,24 +1,31 @@
 
 import React, { useEffect, useState } from 'react';
 
-const DamageIndicator = ({ damage, characterName }) => {
+const DamageIndicator = ({ damage, characterName, damageEventId }) => {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        if (damage) {
-            const showTimer = setTimeout(() => {
+        let showTimer;
+        let hideTimer;
+
+        if (damage > 0) {
+            showTimer = setTimeout(() => {
                 setVisible(true);
             }, 300); // Delay to show after attack effect
 
-            const timer = setTimeout(() => {
+            hideTimer = setTimeout(() => {
                 setVisible(false);
-            }, 16000);
-            return () => {
-                clearTimeout(showTimer);
-                clearTimeout(timer);
-            };
+            }, 16000); // Duration of the indicator
+        } else {
+            setVisible(false); // Hide if damage is 0 or null
         }
-    }, [damage, characterName]);
+
+        return () => {
+            clearTimeout(showTimer);
+            clearTimeout(hideTimer);
+            setVisible(false); // Ensure it's hidden on cleanup
+        };
+    }, [damage, damageEventId]);
 
     if (!visible) {
         return null;

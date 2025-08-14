@@ -40,7 +40,7 @@ async def start_mini_boss_fight(request: StartMiniBossRequest):
     """Starts a new mini-boss fight."""
     config = crud.get_config()
     player_max_hp = config.player_hp.get(request.player_class)
-    boss_max_hp = random.randint(1100, 1300) # Random HP for mini-boss
+    boss_max_hp = random.randint(750, 950) # Random HP for mini-boss within the new range
 
     if not player_max_hp: # Only check player_max_hp now
         raise HTTPException(status_code=404, detail="Invalid class or boss name.")
@@ -105,7 +105,7 @@ async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         players.append(player)
 
     boss_name = "Mergepocalypse"
-    boss_max_hp = 6500 # Fixed HP for ultimate boss
+    boss_max_hp = 3500 # Fixed HP for ultimate boss
     boss = Boss(
         name=boss_name,
         hp=boss_max_hp,
@@ -146,7 +146,7 @@ async def submit_player_action(game_id: str, request: ActionRequest):
     if not game.active_quiz or game.current_turn == "boss":
         raise HTTPException(status_code=400, detail="Not a valid time to act.")
 
-    game.boss.last_damage_taken = None
+    
     quiz = game.active_quiz
     damage = quiz.damage_point
     if request.answer_index != quiz.correct_index:

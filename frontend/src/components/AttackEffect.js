@@ -8,21 +8,29 @@ const imageList = [
     '/assets/images/attack/attack-5.png'
 ];
 
-const AttackEffect = ({ trigger }) => {
+const AttackEffect = ({ trigger, damageEventId }) => {
     const [visible, setVisible] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
 
     useEffect(() => {
-        if (trigger) {
+        let timer;
+
+        if (trigger > 0) {
             const randomImage = imageList[Math.floor(Math.random() * imageList.length)];
             setImageSrc(randomImage);
             setVisible(true);
-            const timer = setTimeout(() => {
+            timer = setTimeout(() => {
                 setVisible(false);
             }, 4000);
-            return () => clearTimeout(timer);
+        } else {
+            setVisible(false); // Hide if trigger is 0 or null
         }
-    }, [trigger]);
+
+        return () => {
+            clearTimeout(timer);
+            setVisible(false); // Ensure it's hidden on cleanup
+        };
+    }, [trigger, damageEventId]);
 
     if (!visible) {
         return null;

@@ -39,6 +39,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
     const [statusMessage, setStatusMessage] = useState("");
     const [actingCharacter, setActingCharacter] = useState(null);
     const [currentEffect, setCurrentEffect] = useState('');
+    const [lastDamageEventId, setLastDamageEventId] = useState(null);
 
     useEffect(() => {
         let intervalId;
@@ -104,6 +105,8 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         if (!newGameState) return;
 
         setBossDialog(newGameState.last_boss_attack);
+        console.log(`Boss ${newGameState.boss.name} attacked: ${newGameState.last_boss_attack}`);
+        setLastDamageEventId(Date.now());
         await wait(8000);
         setBossDialog(null);
 
@@ -120,6 +123,12 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
         setShowQuiz(false);
         const newGameState = await onAction(gameState.game_id, { answer_index: answerIndex });
         if (!newGameState) return;
+
+        if (newGameState.boss.last_damage_taken > 0) {
+            const damageDealt = currentQuiz && currentQuiz.damage_point ? currentQuiz.damage_point : newGameState.boss.last_damage_taken;
+            console.log(`Player attacked ${newGameState.boss.name} for ${damageDealt} damage.`);
+            setLastDamageEventId(Date.now());
+        }
 
         if (currentQuiz) {
             setPlayerDialog({ id: gameState.current_turn, msg: currentQuiz.msg });
@@ -149,6 +158,7 @@ const CombatScreen = ({ gameState, onAction, onReset, pollGameState }) => {
                         effectClass={actingCharacter === 'boss' ? currentEffect : ''}
                         cyclingDialog={bossCyclingDialog}
                         gameType={gameState.game_type}
+                        damageEventId={lastDamageEventId}
                     />
                 </div>
 
