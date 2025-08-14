@@ -40,7 +40,7 @@ async def start_mini_boss_fight(request: StartMiniBossRequest):
     """Starts a new mini-boss fight."""
     config = crud.get_config()
     player_max_hp = config.player_hp.get(request.player_class)
-    boss_max_hp = random.randint(750, 950) # Random HP for mini-boss within the new range
+    boss_max_hp = random.randint(600, 800) # Random HP for mini-boss within the new range
 
     if not player_max_hp: # Only check player_max_hp now
         raise HTTPException(status_code=404, detail="Invalid class or boss name.")
