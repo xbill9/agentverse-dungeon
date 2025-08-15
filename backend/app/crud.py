@@ -18,7 +18,7 @@ GAME_CONFIG = Config(
     player_hp={
         "Shadowblade": 500,
         "Scholar": 450,
-        "Guardian": 800,
+        "Guardian": 950,
         "Summoner": 400,
     },
     boss_hp={

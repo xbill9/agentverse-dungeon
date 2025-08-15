@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from typing import List
 import random
+import asyncio
 
 from . import crud
 from .models import (
@@ -10,6 +11,21 @@ from .models import (
 from .single_agent import create_heroic_action_agent
 
 router = APIRouter()
+
+async def trigger_guardian_agent(player: Player):
+    """Triggers the Guardian agent with a specific message."""
+    print(f"TRIGGER BACKENDWORKD: Starting background call to Guardian agent {player.id}")
+    try:
+        await crud.mock_player_a2a_agent(
+            "A monster is coming be prepared",
+            player.hero_agent,
+            player.id,
+            player.session_id,
+            player.player_class
+        )
+        print(f"TRIGGER BACKENDWORKD: Guardian agent {player.id} triggered successfully.")
+    except Exception as e:
+        print(f"TRIGGER BACKENDWORKD: Failed to trigger Guardian agent {player.id}. Error: {e}")
 
 def advance_turn(game: GameState):
     """Advances the turn to the next player or boss."""
@@ -60,6 +76,9 @@ async def start_mini_boss_fight(request: StartMiniBossRequest):
     )
     player.session_id = session.id
 
+    if player.player_class == "Guardian":
+        asyncio.create_task(trigger_guardian_agent(player))
+
     boss = Boss(
         name=request.boss_name,
         hp=boss_max_hp,
@@ -88,7 +107,7 @@ async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         a2a_endpoint = request.a2a_endpoints.get(p_class)
         if not max_hp or not a2a_endpoint:
             raise HTTPException(status_code=400, detail=f"Missing config for class: {p_class}")
-            
+
         hero_agent_runner = create_heroic_action_agent(player_agent_url=a2a_endpoint)
         player = Player(
             id=f"player_{i+1}", 
@@ -103,6 +122,9 @@ async def start_ultimate_boss_fight(request: StartUltimateBossRequest):
         )
         player.session_id = session.id
         players.append(player)
+
+        if player.player_class == "Guardian":
+            asyncio.create_task(trigger_guardian_agent(player))
 
     boss_name = "Mergepocalypse"
     boss_max_hp = 3500 # Fixed HP for ultimate boss
