@@ -26,7 +26,9 @@ function App() {
     const handleGameStart = async (gameType, params) => {
         try {
             const endpoint = gameType === 'mini' ? '/api/miniboss/start' : '/api/ultimateboss/start';
-            const response = await axios.post(`${API_URL}${endpoint}`, params);
+            const url = `${API_URL}${endpoint}`;
+            console.log(`Making API call to: ${url}`);
+            const response = await axios.post(url, params);
             setPreGameState(response.data);
             setError(null);
             navigate('/pre-combat');
@@ -37,7 +39,9 @@ function App() {
 
     const handleAction = async (gameId, action) => {
         try {
-            const response = await axios.post(`${API_URL}/api/game/${gameId}/action`, action);
+            const url = `${API_URL}/api/game/${gameId}/action`;
+            console.log(`Making API call to: ${url}`);
+            const response = await axios.post(url, action);
             setGameState(response.data);
             return response.data;
         } catch (err) {
@@ -68,7 +72,9 @@ function App() {
 
     const pollGameState = async (gameId) => {
         try {
-            const response = await axios.get(`${API_URL}/api/game/${gameId}`);
+            const url = `${API_URL}/api/game/${gameId}`;
+            console.log(`Making API call to: ${url}`);
+            const response = await axios.get(url);
             setGameState(response.data);
             return response.data;
         } catch (err) {
