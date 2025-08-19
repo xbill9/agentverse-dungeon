@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import HpBar from './HpBar';
 import DialogBubble from './DialogBubble';
 import DamageIndicator from './DamageIndicator';

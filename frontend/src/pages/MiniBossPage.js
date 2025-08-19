@@ -14,7 +14,7 @@ const MiniBossPage = ({ onGameStart }) => {
         setBackground('/assets/images/enterinfo.png');
         const randomBoss = bossOptions[Math.floor(Math.random() * bossOptions.length)];
         setBoss(randomBoss);
-    }, [setBackground]);
+    }, [setBackground, bossOptions]);
 
     useEffect(() => {
         try {
@@ -26,7 +26,7 @@ const MiniBossPage = ({ onGameStart }) => {
             // Invalid URL, so no class can be determined
             setPlayerClass(null);
         }
-    }, [a2aEndpoint]); // Re-run when a2aEndpoint changes
+    }, [a2aEndpoint, playerClasses]); // Re-run when a2aEndpoint changes
 
     const handleStart = () => {
         if (playerClass) {

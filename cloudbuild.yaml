@@ -14,7 +14,7 @@ steps:
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--min-instances=1'
-    - '--port=3000'
+    - '--port=8000'
     - '--cpu=1'
     - '--memory=2G'
 images:

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useBackground } from './contexts/BackgroundContext';
 import axios from 'axios';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import MainMenu from './components/MainMenu';
+
 import CombatScreen from './components/CombatScreen';
 import PreCombatScreen from './components/PreCombatScreen';
 import MiniBossPage from './pages/MiniBossPage';

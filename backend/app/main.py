@@ -1,3 +1,4 @@
+import os
 import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -20,8 +21,9 @@ app.add_middleware(
 app.include_router(api_router, prefix="/api")
 
 # Serve frontend
+STATIC_FILES_DIR = os.environ.get("STATIC_FILES_DIR", "../frontend/build")
 try:
-    app.mount("/", StaticFiles(directory="frontend/build", html=True), name="static")
+    app.mount("/", StaticFiles(directory=STATIC_FILES_DIR, html=True), name="static")
 except RuntimeError:
     print("Frontend build not found. Run `npm run build` in the `frontend` directory.")
 
