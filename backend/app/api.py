@@ -213,11 +213,13 @@ async def process_turn(game: GameState) -> GameState:
         game.last_boss_attack = crud.mock_boss_aoe_attack_agent(game.boss.name)
         active_players = [p for p in game.players if p.hp > 0]
         for player in active_players:
-            damage = random.randint(60, 120) # Default for Shadowblade & Summoner
+            damage = random.randint(60, 120) # Default for Shadowblade
             if player.player_class == "Guardian":
-                damage = random.randint(100, 150)
+                damage = random.randint(110, 170)
             elif player.player_class == "Scholar":
                 damage = random.randint(40, 80)
+            elif player.player_class == "Summoner":
+                damage = random.randint(70, 100)
             player.last_damage_taken = damage
             player.hp = max(0, player.hp - damage)
     else:

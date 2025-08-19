@@ -10,7 +10,7 @@ import UltimateBossPage from './pages/UltimateBossPage';
 import HomePage from './pages/HomePage';
 import './styles.css';
 
-const API_URL = 'http://localhost:8000';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 function App() {
     const [preGameState, setPreGameState] = useState(null);
