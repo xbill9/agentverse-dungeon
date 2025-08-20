@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.agents.remote_a2a_agent import RemoteA2aAgent
 from google.adk.agents.sequential_agent import SequentialAgent
-#from google.adk.agents.remote_a2a_agent import AGENT_CARD_WELL_KNOWN_PATH
+from google.adk.agents.remote_a2a_agent import AGENT_CARD_WELL_KNOWN_PATH
 from google.adk.runners import InMemoryRunner
 from google.genai import types
 
@@ -30,7 +30,7 @@ def create_heroic_action_agent(player_agent_url: str) -> InMemoryRunner:
     player_agent = RemoteA2aAgent(
         name="player_agent",
         description="Player's agent that describes a heroic action.",
-        agent_card=(f"{player_agent_url}/.well-known/agent.json"),
+        agent_card=(f"{player_agent_url}{AGENT_CARD_WELL_KNOWN_PATH}"),
     )
 
     # 2. Define the local agent that parses the narrative into JSON
@@ -68,7 +68,7 @@ def create_heroic_action_agent(player_agent_url: str) -> InMemoryRunner:
     return runner
 
 
-async def process_player_action(
+async def process_player_action_old(
     runner: InMemoryRunner,
     prompt: str,
     user_id: str,

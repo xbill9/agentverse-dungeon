@@ -9,6 +9,7 @@ from .scholar_quizzes import scholar_quizzes
 from .guardian_quizzes import guardian_quizzes
 from .summoner_quizzes import summoner_quizzes
 from .single_agent import process_player_action
+from .single_agent_old import process_player_action_old
 
 # In-memory "database"
 game_db: Dict[str, GameState] = {}
@@ -228,9 +229,13 @@ async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: 
     print(f"--- Starting New Adventure (User ID: {player_id}) ---")
 
     # --- First Turn ---
-    print("\n--- Turn 1: Attacking ---")
+    print(f"\n--- Turn 1: Attacking ---")
     print(f"Boss Attack: {boss_attack}")
-    msg, dmg = await process_player_action(agent_runner, boss_attack, player_id, session_id)
+    if player_class == "Summoner":
+        msg, dmg = await process_player_action(agent_runner, boss_attack, player_id, session_id)
+    else:
+        msg, dmg = await process_player_action_old(agent_runner, boss_attack, player_id, session_id)
+    
 
     # Handle the rate limit error (which results in 0 damage) by falling back to a basic attack
     if dmg == 0:
@@ -247,10 +252,11 @@ async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: 
         else:
             dmg = 50 # Default fallback if class not found
 
-    print("\n--- Parsed Result ---")
+    print(f"\n--- Parsed Result ---")
     print(f"Log: {msg}")
     print(f"Damage: {dmg}")
     return msg, dmg
+
 
 
 def mock_damage_quiz_agent(player_response: str, player_class: str, damage_to_boss: int) -> Quiz:
