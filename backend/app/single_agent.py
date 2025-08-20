@@ -92,6 +92,7 @@ async def process_player_action(
     )
 
     print(f"------->1.Boss Attack prompt: {prompt}")
+    final_output = "Nothing"
     async for event in runner.run_async(
         user_id=user_id,
         session_id=session_id,
@@ -103,17 +104,17 @@ async def process_player_action(
             print(f'** {event.author}: {event.content.parts[0].text}')
         elif event.content.parts[0].function_call:
             print(
-                f'** {event.author}: fc /'
-                f' {event.content.parts[0].function_call.name} /'
+                f'** {event.author}: fc /' 
+                f' {event.content.parts[0].function_call.name} /' 
                 f' {event.content.parts[0].function_call.args}\n'
             )
         elif event.content.parts[0].function_response:
             print(
-                f'** {event.author}: fr /'
-                f' {event.content.parts[0].function_response.name} /'
+                f'** {event.author}: fr /' 
+                f' {event.content.parts[0].function_response.name} /' 
                 f' {event.content.parts[0].function_response.response}\n'
             )
-        final_output="Nothing"
+        
         # The final result is the last message from the agent itself
         if event.author == "HeroicScribeAgent" and event.content.parts and event.content.parts[0].text:
             final_output = event.content.parts[0].text
@@ -131,3 +132,4 @@ async def process_player_action(
     except (json.JSONDecodeError, TypeError):
         logging.error(f"Could not parse final output as JSON: {final_output}")
         return "A garbled message was received from the ether.", 0
+
