@@ -17,9 +17,12 @@ steps:
     - '--port=8000'
     - '--cpu=1'
     - '--memory=2G'
+    - '--set-env-vars=GOOGLE_CLOUD_PROJECT=${_PROJECT_ID},GOOGLE_GENAI_USE_VERTEXAI=TRUE,GOOGLE_CLOUD_LOCATION=${_REGION}
+
 images:
 - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO_NAME}/${_SERVICE_NAME}:latest'
 substitutions:
   _REGION: us-central1 
   _REPO_NAME: agentverse-repo 
-  _SERVICE_NAME: agentverse-dungeon 
+  _SERVICE_NAME: agentverse-dungeon
+  _PROJECT_ID: ""
