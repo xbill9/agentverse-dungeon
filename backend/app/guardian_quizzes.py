@@ -20,7 +20,7 @@ guardian_quizzes = [
         "correct_index": 2
     },
     {
-        "question": "What technology is used to inspect traffic for malicious prompts, PII, and jailbreak attempts? [3]",
+        "question": "What technology is used to inspect traffic for malicious prompts, PII, and jailbreak attempts?",
         "answers": ["Cloud IDS", "VPC Flow Logs", "Model Armor", "Identity-Aware Proxy"],
         "correct_index": 2
     },
@@ -35,17 +35,17 @@ guardian_quizzes = [
         "correct_index": 2
     },
     {
-        "question": "What is the function of a Serverless Network Endpoint Group (NEG) in this architecture? [2]",
+        "question": "What is the function of a Serverless Network Endpoint Group (NEG) in this architecture?",
         "answers": ["To store container images", "To connect a Load Balancer to serverless backends like Cloud Run", "To manage user permissions", "To monitor GPU performance"],
         "correct_index": 1
     },
     {
-        "question": "What is attached to the vLLM service as a sidecar container to scrape detailed performance metrics? [4]",
+        "question": "What is attached to the vLLM service as a sidecar container to scrape detailed performance metrics?",
         "answers": ["Fluentd", "Prometheus exporter", "Cloud Logging agent", "OpenTelemetry Collector"],
         "correct_index": 1
     },
     {
-        "question": "Which tool allows you to view the complete journey of a single request through the agent to diagnose latency? [1]",
+        "question": "Which tool allows you to view the complete journey of a single request through the agent to diagnose latency?",
         "answers": ["Metrics Explorer", "Cloud Profiler", "Cloud Trace", "Cloud Logging"],
         "correct_index": 2
     },
@@ -70,7 +70,7 @@ guardian_quizzes = [
         "correct_index": 1
     },
     {
-        "question": "What component is essential for connecting the Load Balancer to Model Armor to inspect traffic? [3, 7]",
+        "question": "What component is essential for connecting the Load Balancer to Model Armor to inspect traffic?",
         "answers": ["A firewall rule", "A Service Extension", "A VPC Peering connection", "A Cloud DNS record"],
         "correct_index": 1
     },
@@ -80,7 +80,7 @@ guardian_quizzes = [
         "correct_index": 2
     },
     {
-        "question": "The vLLM service is specifically engineered to maximize what in a production environment? [9]",
+        "question": "The vLLM service is specifically engineered to maximize what in a production environment?",
         "answers": ["Model fine-tuning speed", "LLM serving throughput and efficiency", "Ease of local development", "Cross-cloud compatibility"],
         "correct_index": 1
     },
