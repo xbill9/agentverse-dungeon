@@ -232,7 +232,7 @@ async def mock_player_a2a_agent(boss_attack: str, agent_runner: any, player_id: 
     print(f"\n--- Turn 1: Attacking ---")
     print(f"Boss Attack: {boss_attack}")
     if player_class == "Summoner":
-        await asyncio.sleep(45)
+        await asyncio.sleep(30)
         msg, dmg = await process_player_action(agent_runner, boss_attack, player_id, session_id)
     else:
         msg, dmg = await process_player_action_old(agent_runner, boss_attack, player_id, session_id)
