@@ -1,3 +1,4 @@
 {
-  "cloud_run_deploy": {}
+  "cloud_run_deploy": {},
+  "gemini_api": {}
 }
