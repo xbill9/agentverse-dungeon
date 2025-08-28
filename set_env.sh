@@ -74,6 +74,8 @@ export GOOGLE_CLOUD_LOCATION="$REGION"
 echo "Exported REGION=$REGION"
 echo "Exported GOOGLE_CLOUD_LOCATION=$GOOGLE_CLOUD_LOCATION"
 
+# for gemini-cli
+export GOOGLE_CLOUD_PROJECT=$(gcloud config get project)
 
 export TOOLBOX_VERSION=0.10.0
 echo "Exported TOOLBOX_VERSION=$TOOLBOX_VERSION"
@@ -117,6 +119,31 @@ export A2A_BASE_URL="-${PROJECT_NUMBER}.${REGION}.run.app"
 echo "Exported A2A_BASE_URL=$A2A_BASE_URL"
 
 # ===================================================================
+
+export GOOGLE_CLOUD_PROJECT=$(gcloud config get project)
+
+if [ "$CLOUD_SHELL" = "true" ]; then
+  echo "Running in Google Cloud Shell."
+else
+  echo "Not running in Google Cloud Shell."
+  echo "Setting ADC Credentials"
+  gcloud auth application-default login
+
+fi
+
+if [ -n "$FIREBASE_DEPLOY_AGENT" ]; then
+echo "Running in Firebase Studio terminal"
+else
+echo "Not running in Firebase Studio terminal"
+fi
+
+if [ -d "/mnt/chromeos" ] ; then
+     echo "Running on ChromeOS"
+else
+      echo "Not running on ChromeOS"
+fi
+
+
 
 echo ""
 echo "--- Environment setup complete ---"

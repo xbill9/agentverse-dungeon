@@ -27,4 +27,4 @@ substitutions:
   _REGION: us-central1
   _REPO_NAME: agentverse-repo 
   _SERVICE_NAME: agentverse-dungeon
-  _PROJECT_ID: ""
+  _PROJECT_ID: comglitn
